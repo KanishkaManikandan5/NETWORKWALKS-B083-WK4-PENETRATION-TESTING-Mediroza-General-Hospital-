@@ -41,16 +41,25 @@ The assessment followed a standard black-box pentest flow:
 
 **Steps taken:**
 - Ran `curl` against `robots.txt`, revealing disallowed paths: `/patient/`, `/staff/`, `/old/`, and a `sitemap.xml` reference.
+- 
+- ![Alt Text](EVIDENCE/curl.png)
+- 
 - Fingerprinted the stack with **Wappalyzer** — identified **LiteSpeed** web server.
+![Alt Text](EVIDENCE/wapplizer.png)
+
 - Tested the site for clickjacking using **Clickjacker.io**: confirmed the site is **vulnerable** — missing `X-Frame-Options` header and no CSP `frame-ancestors` policy.
+
+- ![Alt Text](EVIDENCE/clickjack.png)
+
+- ![Alt Text](EVIDENCE/clickjack2.png)
 - Located the **Patient Portal** login (`/patientlogin.php`) and tested authentication behavior.
+
+- ![Alt Text](EVIDENCE/login.png)
 - Gained access to the **Patient Portal**, exposing the "My Lab Reports" page listing 3 password-protected PDFs:
   - Pathology Report – S. Dlamini
   - Pathology Report – P. Reddy
-  - Pathology Report – E. Thompson
-
-**Result:** ✅ Access gained; all 3 encrypted PDF lab reports retrieved.
-
+  - Pathology Report – E. Thompson 
+  - ![Alt Text](https://github.com/KanishkaManikandan5/NETWORKWALKS-B083-WK4-PENETRATION-TESTING-Mediroza-General-Hospital-/blob/7515f55cc9dbe56d7eb65f54123d5501f779ef55/EVIDENCE/report%20pdf.png)
 ---
 ## M2 — Data Extraction
 **Objective:** Crack the encryption on all 3 retrieved files.
@@ -59,7 +68,10 @@ The assessment followed a standard black-box pentest flow:
 - Extracted the `$pdf$` hash from each file using a Hash Calculator.
 - Ran dictionary attacks against each hash (no single wordlist/approach worked for all three — different passwords required different handling).
 
-**Result:** ✅ All 3 PDF passwords cracked:
+**Result:** 
+- ![Alt Text](https://github.com/KanishkaManikandan5/NETWORKWALKS-B083-WK4-PENETRATION-TESTING-Mediroza-General-Hospital-/blob/7515f55cc9dbe56d7eb65f54123d5501f779ef55/EVIDENCE/pdf3crack.png)
+
+✅ All 3 PDF passwords cracked:
 
 | File | Cracked Password |
 |---|---|
@@ -76,7 +88,8 @@ The assessment followed a standard black-box pentest flow:
 - Ran `exiftool` on the decrypted PDF and found a **Comments** metadata field leaking internal info: *"DB backup moved to /old before site migration, do not delete."*
 - Browsed to `https://medirozahospital.com/old/` and found **directory listing enabled**, exposing `mediroza_db_backup_2019.sql`.
 - Downloaded and parsed the SQL backup, revealing the `staff` and `shareholders` tables.
-
+- ![Alt Text](https://github.com/KanishkaManikandan5/NETWORKWALKS-B083-WK4-PENETRATION-TESTING-Mediroza-General-Hospital-/blob/7515f55cc9dbe56d7eb65f54123d5501f779ef55/EVIDENCE/exif.png)
+![Alt Text](https://github.com/KanishkaManikandan5/NETWORKWALKS-B083-WK4-PENETRATION-TESTING-Mediroza-General-Hospital-/blob/7515f55cc9dbe56d7eb65f54123d5501f779ef55/EVIDENCE/old.png)
 **Result:** ✅ Critical exposure confirmed — full SQL database backup publicly accessible via directory listing.
 
 - **Staff salary data exposed** (30 employees): names, job titles, departments, emails, phone numbers, national IDs, monthly salaries (ZAR), e.g.:
@@ -84,13 +97,13 @@ The assessment followed a standard black-box pentest flow:
   - Sarah Botha — Chief Financial Officer — R125,000/month
   - Dr. Johan van der Merwe — Medical Director — R100,000/month
   - (full list of 30 records in backup)
-
+![Alt Text](https://github.com/KanishkaManikandan5/NETWORKWALKS-B083-WK4-PENETRATION-TESTING-Mediroza-General-Hospital-/blob/7515f55cc9dbe56d7eb65f54123d5501f779ef55/EVIDENCE/staff.png)
 - **Shareholder data exposed** (10 shareholders): name, share %, shares held, share class, e.g.:
   - Dr. Rajesh Naidoo — 18.0% — 180,000 Ordinary shares
   - Cedar Health Holdings (Pty) Ltd — 15.0% — 150,000 Ordinary shares
   - Reddy Family Trust — 11.0% — 110,000 Ordinary shares
   - (full list of 10 records in backup)
-
+![Alt Text](https://github.com/KanishkaManikandan5/NETWORKWALKS-B083-WK4-PENETRATION-TESTING-Mediroza-General-Hospital-/blob/7515f55cc9dbe56d7eb65f54123d5501f779ef55/EVIDENCE/sharholder.png)
 ---
 ## M4 — Pentest Report
 **Objective:** Document all findings in a professional report.
