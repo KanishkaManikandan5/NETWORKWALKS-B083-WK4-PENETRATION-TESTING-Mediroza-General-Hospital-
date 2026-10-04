@@ -1,4 +1,4 @@
-# Penetration Testing Report — Mediroza General Hospital
+# 🕵️Penetration Testing Report — Mediroza General Hospital
 
 **NetworkWalks Internship | Batch B083 | Week 4**
 
@@ -126,3 +126,24 @@ The assessment followed a standard black-box pentest flow:
 | Sensitive info disclosed via PDF metadata | High |
 | `/old/` directory listing enabled | Critical |
 | Unprotected SQL backup exposing staff PII, salaries & shareholder data | Critical |
+---
+
+# 🛡 Recommendations
+
+| Finding | Remediation |
+|---|---|
+| Username Enumeration | Return identical error messages for invalid username vs. invalid password |
+| SQL Injection | Use parameterized queries / prepared statements; never concatenate raw user input into SQL |
+| PDF Access Control | Store PDFs outside the web root; enforce server-side authorization on every request |
+| Weak PDF Passwords | Enforce strong, unique, randomly generated passwords per document |
+| Metadata Leakage | Strip metadata before distribution: `exiftool -all= filename.pdf` |
+| Directory Listing | Disable directory indexing (`Options -Indexes` in Apache / equivalent in LiteSpeed) |
+| Exposed Backups | Never store database backups in a publicly accessible web directory; move to secured offline storage |
+| Clickjacking | Implement `X-Frame-Options: DENY` and a `Content-Security-Policy: frame-ancestors 'none'` header |
+
+# 👤 Author
+
+
+**KANISHKA M** Cybersecurity Intern B083
+
+LinkedIn: [https://www.linkedin.com/in/kanishka-m525](https://www.linkedin.com/in/kanishka-m525)
